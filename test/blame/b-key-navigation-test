@@ -1,0 +1,58 @@
+#!/bin/sh
+
+. libtest.sh
+. libgit.sh
+
+export COLUMNS=200
+
+# This test verifies the fix for issue #1369
+# The test checks that pressing 'b' in blame view correctly navigates
+# to the corresponding line in the target commit.
+
+in_work_dir create_repo_from_tgz "$base_dir/files/scala-js-benchmarks.tgz"
+
+tigrc <<EOF
+set line-graphics = ascii
+EOF
+
+steps '
+	# Press b to go to blame for that line/commit
+	:view-blame
+	:save-display recursive-blame.screen
+'
+
+test_tig blame +27 project/Build.scala
+
+# This shows that after pressing 'b' we should be positioned the line starting
+# with "lazy val parent".
+assert_equals 'recursive-blame.screen' <<EOF
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  18|       scalaVersion := scalajsScalaVersion,
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  19|       scalacOptions ++= Seq(
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  20|           "-deprecation",
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  21|           "-unchecked",
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  22|           "-feature",
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  23|           "-encoding", "utf8"
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  24|       )
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  25|   )
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  26|
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  27|   lazy val benchmarkSettings = defaultSettings ++ Seq(
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  28|       unmanagedSources in (Compile, packageJS) +=
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  29|           baseDirectory.value / "exports.js"
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  30|   )
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  31|
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  32|   lazy val parent: Project = Project(
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  33|       id = "parent",
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  34|       base = file("."),
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  35|       settings = projectSettings ++ Seq(
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  36|           name := "Scala.js Benchmarks",
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  37|           publishArtifact in Compile := false,
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  38|
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  39|           clean := clean.dependsOn(
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  40|              clean in common,
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  41|              clean in tracer
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  42|           ).value
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  43|       )
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  44|   ).aggregate(
+90286e0 Jonas Fonseca 2013-10-14 14:56 -0400  45|       common,
+[blame] 90286e0752016a6bca30dfa7ca236d1f99345eb8 changed project/Build.scala - line 32 of 66 68%
+EOF
