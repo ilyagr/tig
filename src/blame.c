@@ -339,7 +339,7 @@ setup_blame_parent_line(struct view *view, struct blame *blame)
 				blamed_lineno = atoi(pos + 1);
 
 		} else if (*line == '+' && parent_lineno != -1) {
-			if (blame->lineno == blamed_lineno - 1 &&
+			if (blame->lineno == blamed_lineno &&
 			    !strcmp(blame->text, line + 1)) {
 				view->pos.lineno = parent_lineno ? parent_lineno - 1 : 0;
 				break;
@@ -377,9 +377,12 @@ blame_go_forward(struct view *view, struct blame *blame, bool parent)
 
 	string_ncopy(view->env->ref, id, sizeof(commit->id));
 	string_ncopy(view->env->file, filename, strlen(filename));
-	if (parent)
+	if (parent) {
 		setup_blame_parent_line(view, blame);
-	view->env->goto_lineno = view->pos.lineno;
+		view->env->goto_lineno = view->pos.lineno;
+	} else {
+		view->env->goto_lineno = blame->lineno - 1;
+	}
 	reload_view(view);
 }
 
