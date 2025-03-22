@@ -77,9 +77,6 @@ blame_open(struct view *view, enum open_flags flags)
 	enum status_code code;
 	size_t i;
 
-	if (!(repo.is_inside_work_tree || *repo.worktree))
-		return error("The blame view requires a working tree");
-
 	if (is_initial_view(view)) {
 		/* Finish validating and setting up blame options */
 		if (!opt_file_args || opt_file_args[1])
@@ -335,7 +332,7 @@ setup_blame_parent_line(struct view *view, struct blame *blame)
 				blamed_lineno = atoi(pos + 1);
 
 		} else if (*line == '+' && parent_lineno != -1) {
-			if (blame->lineno == blamed_lineno - 1 &&
+			if (blame->lineno == blamed_lineno &&
 			    !strcmp(blame->text, line + 1)) {
 				view->pos.lineno = parent_lineno ? parent_lineno - 1 : 0;
 				break;
@@ -373,9 +370,12 @@ blame_go_forward(struct view *view, struct blame *blame, bool parent)
 
 	string_ncopy(view->env->ref, id, sizeof(commit->id));
 	string_ncopy(view->env->file, filename, strlen(filename));
-	if (parent)
+	if (parent) {
 		setup_blame_parent_line(view, blame);
-	view->env->goto_lineno = view->pos.lineno;
+		view->env->goto_lineno = view->pos.lineno;
+	} else {
+		view->env->goto_lineno = blame->lineno - 1;
+	}
 	reload_view(view);
 }
 
@@ -451,7 +451,9 @@ blame_request(struct view *view, enum request request, struct line *line)
 			if (diff->pipe)
 				string_copy_rev(diff->ref, NULL_ID);
 		} else {
-			open_diff_view(view, flags);
+			string_ncopy(view->env->file, blame->commit->filename, strlen(blame->commit->filename));
+			view->env->blame_lineno = blame->lineno;
+			open_diff_view(view, flags | OPEN_RELOAD);
 		}
 		break;
 
