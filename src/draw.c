@@ -13,6 +13,7 @@
 
 #include "tig/tig.h"
 #include "tig/graph.h"
+#include "tig/display.h"
 #include "tig/draw.h"
 #include "tig/options.h"
 #include "compat/hashtab.h"
@@ -667,10 +668,12 @@ draw_view_line(struct view *view, unsigned int lineno)
 	line->selected = false;
 	line->dirty = line->cleareol = 0;
 
-	/// !!!!!
 	if (selected) {
-	// if (view == display[current_view])
-		set_view_attr(view, LINE_CURSOR);
+		if (view == display[current_view]) {
+			set_view_attr(view, LINE_CURSOR);
+		} else {
+			set_view_attr(view, LINE_INACTIVE_CURSOR);
+		}
 		line->selected = true;
 		view->ops->select(view, line);
 	}
