@@ -77,6 +77,7 @@ draw_chars(struct view *view, enum line_type type, const char *string, int lengt
 
 	len = utf8_length(&string, length, skip, &col, max_width, &trimmed, use_tilde, opt_tab_size);
 
+	// This might be where the cursor is colored
 	set_view_attr(view, type);
 	if (len > 0)
 		waddnstr(view->win, string, len);
@@ -666,7 +667,9 @@ draw_view_line(struct view *view, unsigned int lineno)
 	line->selected = false;
 	line->dirty = line->cleareol = 0;
 
+	/// !!!!!
 	if (selected) {
+	// if (view == display[current_view])
 		set_view_attr(view, LINE_CURSOR);
 		line->selected = true;
 		view->ops->select(view, line);

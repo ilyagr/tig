@@ -32,6 +32,7 @@ void report_clear(void);
  */
 
 /* The display array of active views and the index of the current view. */
+// !!
 extern struct view *display[2];
 extern unsigned int current_view;
 
