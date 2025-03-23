@@ -253,6 +253,8 @@ view_driver(struct view *view, enum request request)
 		current_view = next_view;
 		/* Blur out the title of the previous view. */
 		update_view_title(view);
+		// Could do redraw_view() here. Or, everywhere `update_view_title` is
+		// called. Or see all updates to `current_view`
 		report_clear();
 		break;
 	}
@@ -614,6 +616,7 @@ find_clicked_view(MEVENT *event)
 		if (beg_y <= event->y && event->y < beg_y + view->height
 		    && beg_x <= event->x && event->x < beg_x + view->width) {
 			if (i != current_view) {
+				// Here. Also, it's a bug that `update_...` isn't called here
 				current_view = i;
 			}
 			return view;
