@@ -869,6 +869,7 @@ open_view(struct view *prev, struct view *view, enum open_flags flags)
 
 	assert(flags ^ OPEN_REFRESH);
 
+	// Probably need to redrasw around here
 	if (view == prev && nviews == 1 && !reload) {
 		if (view->parent)
 			view->parent = NULL;
