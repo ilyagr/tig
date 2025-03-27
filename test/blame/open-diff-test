@@ -16,42 +16,115 @@ EOF
 
 steps '
 	# Press , to go to the parent of the blamed commit for that line
+	:save-display blame.screen
 	:enter
 	:maximize
 	:save-display diff-from-blame.screen
+	:view-close
+	:move-down
+	:move-down
+	:move-down
+	:enter
+	:maximize
+	:save-display diff-from-blame-down-down-down.screen
 '
 
-test_tig blame +36 project/Build.scala
+test_tig blame +6 project/Build.scala
+
+assert_equals 'blame.screen' <<EOF
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   1| import sbt._
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   2| import Keys._
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   3|
+74537d9 Sébastien Doeraene 2013-10-29 18:46 +0100   4| import scala.scalajs.sbtplugin._
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   5| import ScalaJSPlugin._
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   6| import ScalaJSKeys._
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   7|
+4779f9b Jonas Fonseca      2013-11-26 20:13 -0500   8| object ScalaJSBenchmarks extends Build {
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   9|
+4779f9b Jonas Fonseca      2013-11-26 20:13 -0500  10|   val scalaJSScalaVersion = "2.10.2"
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  11|
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  12|   val projectSettings = Defaults.defaultSettings ++ Seq(
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  13|       organization := "scalajs-benchmarks",
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  14|       version := "0.1-SNAPSHOT"
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  15|   )
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  16|
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  17|   val defaultSettings = projectSettings ++ scalaJSSettings ++ Seq(
+4779f9b Jonas Fonseca      2013-11-26 20:13 -0500  18|       scalaVersion := scalaJSScalaVersion,
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  19|       scalacOptions ++= Seq(
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  20|           "-deprecation",
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  21|           "-unchecked",
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  22|           "-feature",
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  23|           "-encoding", "utf8"
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  24|       )
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  25|   )
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  26|
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  27|   lazy val parent: Project = Project(
+90286e0 Jonas Fonseca      2013-10-14 14:56 -0400  28|       id = "parent",
+[blame] 90286e0752016a6bca30dfa7ca236d1f99345eb8 changed project/Build.scala - line 6 of 64                                                                                                          43%
+EOF
 
 # This shows that TODO
 assert_equals 'diff-from-blame.screen' <<EOF
-commit b103989d59edab3adc312ff5408fa3d344ea0201
+commit 90286e0752016a6bca30dfa7ca236d1f99345eb8
 Author:     Jonas Fonseca <jonas.fonseca@gmail.com>
-AuthorDate: Fri Oct 18 18:00:05 2013 -0400
-Commit:     Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
-CommitDate: Sun Oct 20 00:23:18 2013 -0700
+AuthorDate: Mon Oct 14 13:15:42 2013 -0400
+Commit:     Jonas Fonseca <jonas.fonseca@gmail.com>
+CommitDate: Mon Oct 14 14:56:27 2013 -0400
  
-    Add DeltaBlue benchmark
+    Initial import of Tracer benchmark
 ---
- project/Build.scala | 3 +++
- 1 file changed, 3 insertions(+)
+ project/Build.scala | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
  
 diff --git a/project/Build.scala b/project/Build.scala
-index 4712592..560bca1 100644
---- a/project/Build.scala
+new file mode 100644
+index 0000000..c028aca
+--- /dev/null
 +++ b/project/Build.scala
-@@ -38,17 +38,20 @@ object ScalaJSBuild extends Build {
+@@ -0,0 +1,66 @@
++import sbt._
++import Keys._
++
++import ch.epfl.lamp.sbtscalajs._
++import ScalaJSPlugin._
++import ScalaJSKeys._
++
++object ScalaJSBuild extends Build {
++
++  val scalajsScalaVersion = "2.10.2"
++
+[diff] 90286e0752016a6bca30dfa7ca236d1f99345eb8 - line 1 of 83                                                                                                                                       33%
+EOF
+
+
+assert_equals 'diff-from-blame-down-down-down.screen' <<EOF
+commit 90286e0752016a6bca30dfa7ca236d1f99345eb8
+Author:     Jonas Fonseca <jonas.fonseca@gmail.com>
+AuthorDate: Mon Oct 14 13:15:42 2013 -0400
+Commit:     Jonas Fonseca <jonas.fonseca@gmail.com>
+CommitDate: Mon Oct 14 14:56:27 2013 -0400
  
-           clean := clean.dependsOn(
-             clean in common,
-+            clean in deltablue,
-             clean in richards,
-             clean in tracer
-          ).value
-       )
-   ).aggregate(
-       common,
-+      deltablue,
-       richards,
-[diff] b103989d59edab3adc312ff5408fa3d344ea0201 - line 1 of 36                                                                                                                                       77%
+    Initial import of Tracer benchmark
+---
+ project/Build.scala | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+ 
+diff --git a/project/Build.scala b/project/Build.scala
+new file mode 100644
+index 0000000..c028aca
+--- /dev/null
++++ b/project/Build.scala
+@@ -0,0 +1,66 @@
++import sbt._
++import Keys._
++
++import ch.epfl.lamp.sbtscalajs._
++import ScalaJSPlugin._
++import ScalaJSKeys._
++
++object ScalaJSBuild extends Build {
++
++  val scalajsScalaVersion = "2.10.2"
++
+[diff] 90286e0752016a6bca30dfa7ca236d1f99345eb8 - line 1 of 83                                                                                                                                       33%
 EOF
