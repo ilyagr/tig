@@ -25,11 +25,6 @@ test_tig blame +36 project/Build.scala
 
 # This shows that TODO
 assert_equals 'diff-from-blame.screen' <<EOF
-commit b103989d59edab3adc312ff5408fa3d344ea0201
-Author:     Jonas Fonseca <jonas.fonseca@gmail.com>
-AuthorDate: Fri Oct 18 18:00:05 2013 -0400
-Commit:     Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
-CommitDate: Sun Oct 20 00:23:18 2013 -0700
  
     Add DeltaBlue benchmark
 ---
@@ -53,5 +48,10 @@ index 4712592..560bca1 100644
        common,
 +      deltablue,
        richards,
-[diff] b103989d59edab3adc312ff5408fa3d344ea0201 - line 1 of 36                                                                                                                                       77%
+       tracer
+   )
+ 
+   lazy val common = project("Common", defaultSettings)
++  lazy val deltablue = project("DeltaBlue", benchmarkSettings).dependsOn(common)
+[diff] Changes to 'project/Build.scala' - line 20 of 36                                                                                                                                              91%
 EOF

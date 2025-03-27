@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include "tig/blame.h"
 #include "tig/io.h"
 #include "tig/refdb.h"
 #include "tig/repo.h"
@@ -22,6 +23,9 @@
 #include "tig/git.h"
 #include "tig/diff.h"
 #include "tig/main.h"
+
+char *filename_from_blame = NULL;
+unsigned long lineno_from_blame;
 
 /*
  * Blame backend
@@ -451,7 +455,13 @@ blame_request(struct view *view, enum request request, struct line *line)
 			if (diff->pipe)
 				string_copy_rev(diff->ref, NULL_ID);
 		} else {
-			open_diff_view(view, flags);
+			// open_diff_view_from_blame(view, flags, get_path(state->filename), blame->lineno);
+			if (filename_from_blame) {
+				free(filename_from_blame);
+			}
+			filename_from_blame = strdup(state->filename);
+			lineno_from_blame = blame -> lineno;
+			open_diff_view(view, flags | OPEN_BLAMED_LINE);
 		}
 		break;
 
