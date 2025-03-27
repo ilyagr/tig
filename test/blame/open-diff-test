@@ -1,0 +1,57 @@
+#!/bin/sh
+
+. libtest.sh
+. libgit.sh
+
+export COLUMNS=200
+
+# The test checks that pressing 'Enter' in blame view correctly navigates
+# to the corresponding line in the diff.
+
+in_work_dir create_repo_from_tgz "$base_dir/files/scala-js-benchmarks.tgz"
+
+tigrc <<EOF
+set line-graphics = ascii
+EOF
+
+steps '
+	# Press , to go to the parent of the blamed commit for that line
+	:enter
+	:maximize
+	:save-display diff-from-blame.screen
+'
+
+test_tig blame +36 project/Build.scala
+
+# This shows that TODO
+assert_equals 'diff-from-blame.screen' <<EOF
+commit b103989d59edab3adc312ff5408fa3d344ea0201
+Author:     Jonas Fonseca <jonas.fonseca@gmail.com>
+AuthorDate: Fri Oct 18 18:00:05 2013 -0400
+Commit:     Jonas Fonseca <jonas.fonseca@savoirfairelinux.com>
+CommitDate: Sun Oct 20 00:23:18 2013 -0700
+ 
+    Add DeltaBlue benchmark
+---
+ project/Build.scala | 3 +++
+ 1 file changed, 3 insertions(+)
+ 
+diff --git a/project/Build.scala b/project/Build.scala
+index 4712592..560bca1 100644
+--- a/project/Build.scala
++++ b/project/Build.scala
+@@ -38,17 +38,20 @@ object ScalaJSBuild extends Build {
+ 
+           clean := clean.dependsOn(
+             clean in common,
++            clean in deltablue,
+             clean in richards,
+             clean in tracer
+          ).value
+       )
+   ).aggregate(
+       common,
++      deltablue,
+       richards,
+[diff] b103989d59edab3adc312ff5408fa3d344ea0201 - line 1 of 36                                                                                                                                       77%
+EOF
