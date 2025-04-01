@@ -4,6 +4,8 @@
 . libgit.sh
 
 export COLUMNS=200
+# export debugger="my-debugger.sh"
+export runner="my-debugger.sh"  # no stdio
 
 # The test checks that pressing 'Enter' in blame view correctly navigates
 # to the corresponding line in the diff.
