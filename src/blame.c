@@ -463,7 +463,7 @@ blame_request(struct view *view, enum request request, struct line *line)
 			}
 			filename_from_blame = strdup(blame->commit->filename);
 			lineno_from_blame = blame -> lineno;
-			open_diff_view(view, flags | OPEN_RELOAD | OPEN_BLAMED_LINE);
+			open_diff_view(view, OPEN_RELOAD | OPEN_BLAMED_LINE);
 		}
 		break;
 
