@@ -5,7 +5,7 @@
 
 export COLUMNS=200
 # export debugger="my-debugger.sh"
-export runner="my-debugger.sh"  # no stdio
+# export runner="my-debugger.sh"  # no stdio
 
 # The test checks that pressing 'Enter' in blame view correctly navigates
 # to the corresponding line in the diff.
@@ -18,22 +18,27 @@ EOF
 
 steps '
 	# Press , to go to the parent of the blamed commit for that line
-	:save-display blame.screen
+	:save-display 00-blame.screen
 	:enter
 	:maximize
-	:save-display diff-from-blame.screen
+	:save-display 10-diff-from-blame.screen
 	:view-close
 	:move-down
 	:move-down
 	:move-down
+	:save-display 15-blame-before-diff.screen
 	:enter
 	:maximize
-	:save-display diff-from-blame-down-down-down.screen
+	:save-display 20-diff-from-blame-down-down-down.screen
+	:view-close
+	:move-up
+	:view-diff
+	:save-display 30-diff-from-open-diff.screen
 '
 
 test_tig blame +6 project/Build.scala
 
-assert_equals 'blame.screen' <<EOF
+assert_equals '00-blame.screen' <<EOF
 90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   1| import sbt._
 90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   2| import Keys._
 90286e0 Jonas Fonseca      2013-10-14 14:56 -0400   3|
@@ -66,7 +71,7 @@ assert_equals 'blame.screen' <<EOF
 EOF
 
 # This shows that TODO
-assert_equals 'diff-from-blame.screen' <<EOF
+assert_equals '10-diff-from-blame.screen' <<EOF
  project/Build.scala | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 66 insertions(+)
  
@@ -98,7 +103,7 @@ index 0000000..c028aca
 [diff] Changes to 'project/Build.scala' - line 23 of 83                                                                                                                                              43%
 EOF
 
-assert_equals 'diff-from-blame-down-down-down.screen' <<EOF
+assert_equals '20-diff-from-blame-down-down-down.screen' <<EOF
  project/Build.scala | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 66 insertions(+)
  
