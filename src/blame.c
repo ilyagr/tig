@@ -453,7 +453,7 @@ blame_request(struct view *view, enum request request, struct line *line)
 		} else {
 			string_ncopy(view->env->file, blame->commit->filename, strlen(blame->commit->filename));
 			view->env->blame_lineno = blame->lineno;
-			open_diff_view(view, flags | OPEN_RELOAD);
+			open_diff_view(view, OPEN_RELOAD);
 		}
 		break;
 
