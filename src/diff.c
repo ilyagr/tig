@@ -450,7 +450,7 @@ diff_save_line(struct view *view, struct diff_state *state, enum open_flags flag
 		if (file) {
 			state->file = get_path(file);
 			state->lineno = diff_get_lineno(view, line, false);
-			state->pos = view->pos;
+			state->pos_offset = view->pos.lineno - view->pos.offset;
 		}
 	}
 	if (flags & OPEN_BLAMED_LINE) {
@@ -458,7 +458,7 @@ diff_save_line(struct view *view, struct diff_state *state, enum open_flags flag
 		if (file) {
 			state->file = get_path(file);
 			state->lineno = lineno_from_blame;
-			state->pos.offset = 5; // TODO: Should be half screen
+			state->pos_offset = 5; // TODO: Should be half screen
 		}
 	}
 }
@@ -490,7 +490,7 @@ diff_restore_line(struct view *view, struct diff_state *state)
 		for (line++; view_has_line(view, line) && line->type != LINE_DIFF_CHUNK; line++) {
 			if (lineno == state->lineno) {
 				unsigned long lineno = line - view->line;
-				unsigned long offset = lineno - (state->pos.lineno - state->pos.offset);
+				unsigned long offset = lineno - state->pos_offset;
 
 				goto_view_line(view, offset, lineno);
 				redraw_view(view);
