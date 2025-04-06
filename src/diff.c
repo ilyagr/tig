@@ -459,6 +459,8 @@ diff_save_line(struct view *view, struct diff_state *state, enum open_flags flag
 			state->file = get_path(file);
 			state->lineno = lineno_from_blame;
 			state->pos_offset = 5; // TODO: Should be half screen
+			if (state->pos_offset > state->lineno)
+				state->pos_offset = state -> lineno;
 		}
 	}
 }
